@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Shorts BD</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+    }
+    .app {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      background: #000;
+    }
+    .video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #111;
+    }
+    .topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 18px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(#000b, transparent);
+      z-index: 5;
+    }
+    .logo { font-size: 20px; font-weight: 700; }
+    .balance {
+      background: #ffffff22;
+      border: 1px solid #ffffff33;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .side {
+      position: absolute;
+      right: 12px;
+      bottom: 105px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      z-index: 5;
+    }
+    .action {
+      width: 48px; height: 48px;
+      border: 0;
+      border-radius: 50%;
+      background: #ffffff22;
+      color: white;
+      font-size: 21px;
+      cursor: pointer;
+    }
+    .count { font-size: 11px; margin-top: -11px; }
+    .info {
+      position: absolute;
+      left: 14px; right: 75px;
+      bottom: 25px;
+      z-index: 5;
+      text-shadow: 0 1px 4px #000;
+    }
+    .title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .desc { font-size: 13px; line-height: 1.45; opacity: .92; }
+    .ad {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 420px;
+      min-height: 50px;
+      border: 1px dashed #ffffff55;
+      background: #0008;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #ddd;
+      z-index: 4;
+    }
+    .message {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111d;
+      padding: 14px 18px;
+      border-radius: 12px;
+      display: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <!-- Demo video. Replace this URL with your own video later. -->
+    <video id="video" class="video" autoplay muted loop playsinline
+      src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+    </video>
+
+    <div class="topbar">
+      <div class="logo">🎬 Shorts BD</div>
+      <div class="balance">💰 <span id="points">0</span> Points</div>
+    </div>
+
+    <!-- Ad placement. Real ads will be connected later with an approved ad provider. -->
+    <div class="ad">Advertisement area</div>
+
+    <div class="side">
+      <button class="action" onclick="likeVideo()">❤️</button>
+      <div class="count" id="likes">0</div>
+
+      <button class="action" onclick="shareVideo()">↗️</button>
+      <div class="count">Share</div>
+    </div>
+
+    <div class="info">
+      <div class="title">🌸 Beautiful Short Video</div>
+      <div class="desc">আপনার Shorts ভিডিও এখানে দেখানো হবে। পরবর্তীতে Admin Panel থেকে ভিডিও যোগ করা যাবে।</div>
+    </div>
+
+    <div id="message" class="message">✅ Done</div>
+  </main>
+
+  <script>
+    let points = Number(localStorage.getItem("points") || 0);
+    let likes = Number(localStorage.getItem("likes") || 0);
+
+    document.getElementById("points").textContent = points;
+    document.getElementById("likes").textContent = likes;
+
+    function likeVideo() {
+      likes++;
+      localStorage.setItem("likes", likes);
+      document.getElementById("likes").textContent = likes;
+      showMessage("❤️ Liked");
+    }
+
+    async function shareVideo() {
+      const data = {
+        title: "Shorts BD",
+        text: "এই Short ভিডিওটি দেখুন!",
+        url: window.location.href
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(data);
+        } else {
+          await navigator.clipboard.writeText(window.location.href);
+          showMessage("🔗 Link copied");
+        }
+      } catch (e) {}
+    }
+
+    function showMessage(text) {
+      const el = document.getElementById("message");
+      el.textContent = text;
+      el.style.display = "block";
+      setTimeout(() => el.style.display = "none", 1200);
+    }
+
+    // Telegram Mini App support
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+    }
+  </script>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+</html>
